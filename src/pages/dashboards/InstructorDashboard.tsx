@@ -396,16 +396,59 @@ const InstructorDashboard = () => {
             )}
           </TabsContent>
 
-          <TabsContent value="sessions">
-            <Card className="gradient-card border shadow-medium">
+          <TabsContent value="sessions" className="space-y-4">
+            <Card>
               <CardHeader>
                 <CardTitle>Upcoming Sessions</CardTitle>
-                <CardDescription>Manage sessions for each course in the Edit Course page</CardDescription>
+                <CardDescription>
+                  Your scheduled teaching sessions
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
-                  To schedule and manage sessions, go to any course and click "Edit" to access the Sessions tab.
-                </p>
+                {upcomingSessions.length === 0 ? (
+                  <p className="text-muted-foreground">No upcoming sessions scheduled</p>
+                ) : (
+                  <div className="space-y-4">
+                    {upcomingSessions.map((session) => (
+                      <div key={session.id} className="flex items-start justify-between p-4 border rounded-lg">
+                        <div className="flex-1">
+                          <h4 className="font-semibold">{session.title}</h4>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {session.courses?.title}
+                          </p>
+                          <div className="flex items-center gap-4 mt-2 text-sm">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="h-4 w-4" />
+                              {new Date(session.session_date).toLocaleDateString()}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Clock className="h-4 w-4" />
+                              {new Date(session.session_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            <span>{session.duration_minutes} min</span>
+                          </div>
+                          {session.zoom_link && (
+                            <a 
+                              href={session.zoom_link} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-sm text-primary hover:underline mt-2 inline-block"
+                            >
+                              Join Zoom Meeting
+                            </a>
+                          )}
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => navigate(`/instructor/courses/edit/${session.course_id}`)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
