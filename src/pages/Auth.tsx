@@ -22,6 +22,9 @@ const Auth = () => {
     name: "",
     email: "",
     password: "",
+    phone: "",
+    university: "",
+    studentStatus: "current_student",
     role: defaultRole,
   });
   const [loading, setLoading] = useState(false);
@@ -64,6 +67,9 @@ const Auth = () => {
       signupData.email,
       signupData.password,
       signupData.name,
+      signupData.phone,
+      signupData.university,
+      signupData.studentStatus as "current_student" | "graduated",
       signupData.role as "student" | "instructor" | "company" | "admin"
     );
 
@@ -171,6 +177,17 @@ const Auth = () => {
                     />
                   </div>
                   <div className="space-y-2">
+                    <Label htmlFor="signup-phone">Phone Number</Label>
+                    <Input
+                      id="signup-phone"
+                      type="tel"
+                      placeholder="+20 123 456 7890"
+                      value={signupData.phone}
+                      onChange={(e) => setSignupData({ ...signupData, phone: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
                     <Input
                       id="signup-email"
@@ -191,6 +208,32 @@ const Auth = () => {
                       onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                       required
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-university">University</Label>
+                    <Input
+                      id="signup-university"
+                      type="text"
+                      placeholder="e.g., Cairo University"
+                      value={signupData.university}
+                      onChange={(e) => setSignupData({ ...signupData, university: e.target.value })}
+                    />
+                    <p className="text-xs text-muted-foreground">Optional - Leave blank if not applicable</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-student-status">Academic Status</Label>
+                    <Select
+                      value={signupData.studentStatus}
+                      onValueChange={(value) => setSignupData({ ...signupData, studentStatus: value })}
+                    >
+                      <SelectTrigger id="signup-student-status">
+                        <SelectValue placeholder="Select your status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="current_student">Current Student</SelectItem>
+                        <SelectItem value="graduated">Graduated</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-role">I am a...</Label>

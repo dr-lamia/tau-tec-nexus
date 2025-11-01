@@ -388,6 +388,8 @@ export type Database = {
           full_name: string
           id: string
           phone: string | null
+          student_status: Database["public"]["Enums"]["student_status"] | null
+          university: string | null
           updated_at: string
         }
         Insert: {
@@ -397,6 +399,8 @@ export type Database = {
           full_name: string
           id: string
           phone?: string | null
+          student_status?: Database["public"]["Enums"]["student_status"] | null
+          university?: string | null
           updated_at?: string
         }
         Update: {
@@ -406,6 +410,8 @@ export type Database = {
           full_name?: string
           id?: string
           phone?: string | null
+          student_status?: Database["public"]["Enums"]["student_status"] | null
+          university?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -487,6 +493,7 @@ export type Database = {
         | "approved"
         | "rejected"
         | "completed"
+      student_status: "current_student" | "graduated"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -625,6 +632,7 @@ export const Constants = {
         "rejected",
         "completed",
       ],
+      student_status: ["current_student", "graduated"],
     },
   },
 } as const
