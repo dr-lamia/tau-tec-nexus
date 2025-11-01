@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,11 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { GraduationCap, ArrowLeft } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, signIn, signUp } = useAuth();
   const defaultRole = searchParams.get("role") || "student";
 
   const [loginData, setLoginData] = useState({ email: "", password: "" });
@@ -22,24 +24,63 @@ const Auth = () => {
     password: "",
     role: defaultRole,
   });
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+
+    const { error } = await signIn(loginData.email, loginData.password);
+
+    if (error) {
+      toast({
+        title: "Login Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
+
     toast({
       title: "Login Successful!",
       description: "Welcome back to Tau Tec",
     });
-    // TODO: Implement actual login logic with Supabase
     navigate("/dashboard");
   };
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+
+    const { error } = await signUp(
+      signupData.email,
+      signupData.password,
+      signupData.name,
+      signupData.role as "student" | "instructor" | "company" | "admin"
+    );
+
+    if (error) {
+      toast({
+        title: "Signup Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
+
     toast({
       title: "Account Created!",
       description: "Welcome to Tau Tec",
     });
-    // TODO: Implement actual signup logic with Supabase
     navigate("/dashboard");
   };
 
@@ -109,8 +150,8 @@ const Auth = () => {
                       Forgot password?
                     </a>
                   </div>
-                  <Button type="submit" variant="hero" className="w-full">
-                    Login
+                  <Button type="submit" variant="hero" className="w-full" disabled={loading}>
+                    {loading ? "Logging in..." : "Login"}
                   </Button>
                 </form>
               </TabsContent>
@@ -167,8 +208,8 @@ const Auth = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Button type="submit" variant="hero" className="w-full">
-                    Create Account
+                  <Button type="submit" variant="hero" className="w-full" disabled={loading}>
+                    {loading ? "Creating Account..." : "Create Account"}
                   </Button>
                 </form>
               </TabsContent>
