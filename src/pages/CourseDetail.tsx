@@ -57,17 +57,29 @@ const CourseDetail = () => {
 
   const fetchCourseDetails = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch course
+      const { data: courseData, error: courseError } = await supabase
         .from("courses")
-        .select(`
-          *,
-          instructor:profiles!instructor_id(id, full_name, email)
-        `)
+        .select("*")
         .eq("id", id)
         .single();
 
-      if (error) throw error;
-      setCourse(data);
+      if (courseError) throw courseError;
+
+      // Fetch instructor
+      const { data: instructorData, error: instructorError } = await supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .eq("id", courseData.instructor_id)
+        .single();
+
+      if (instructorError) throw instructorError;
+
+      // Merge data
+      setCourse({
+        ...courseData,
+        instructor: instructorData
+      });
     } catch (error) {
       console.error("Error fetching course:", error);
       toast({

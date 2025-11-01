@@ -46,16 +46,33 @@ const Courses = () => {
 
   const fetchCourses = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch courses
+      const { data: coursesData, error: coursesError } = await supabase
         .from("courses")
-        .select(`
-          *,
-          instructor:profiles!instructor_id(full_name)
-        `)
+        .select("*")
         .eq("status", "published");
 
-      if (error) throw error;
-      setCourses(data || []);
+      if (coursesError) throw coursesError;
+
+      // Fetch instructors
+      const instructorIds = [...new Set(coursesData?.map(c => c.instructor_id))];
+      const { data: instructorsData, error: instructorsError } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", instructorIds);
+
+      if (instructorsError) throw instructorsError;
+
+      // Merge data
+      const instructorsMap = new Map(instructorsData?.map(i => [i.id, i]));
+      const coursesWithInstructors = coursesData?.map(course => ({
+        ...course,
+        instructor: {
+          full_name: instructorsMap.get(course.instructor_id)?.full_name || "Unknown"
+        }
+      }));
+
+      setCourses(coursesWithInstructors || []);
     } catch (error) {
       console.error("Error fetching courses:", error);
       toast({
