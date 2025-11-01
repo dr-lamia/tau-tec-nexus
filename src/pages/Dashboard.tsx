@@ -17,6 +17,7 @@ const Dashboard = () => {
 
   // If no role found, show message
   if (!userRole) {
+    console.warn("Dashboard: No user role detected");
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -26,6 +27,8 @@ const Dashboard = () => {
       </div>
     );
   }
+
+  console.log("Dashboard: Routing to dashboard for role:", userRole);
 
   // Route to appropriate dashboard based on role
   switch (userRole) {

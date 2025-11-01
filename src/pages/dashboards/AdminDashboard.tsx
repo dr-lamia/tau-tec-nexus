@@ -2,9 +2,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Users, BookOpen, Building2, Settings, LogOut, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
   const { signOut } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -86,7 +88,10 @@ const AdminDashboard = () => {
 
         {/* Management Sections */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+          <Card 
+            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+            onClick={() => navigate('/admin/analytics')}
+          >
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center mb-4">
                 <Users className="h-6 w-6 text-slate-700" />
@@ -96,7 +101,10 @@ const AdminDashboard = () => {
             </CardHeader>
           </Card>
 
-          <Card className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+          <Card 
+            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+            onClick={() => navigate('/admin/content')}
+          >
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                 <BookOpen className="h-6 w-6 text-primary" />
@@ -106,7 +114,10 @@ const AdminDashboard = () => {
             </CardHeader>
           </Card>
 
-          <Card className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+          <Card 
+            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+            onClick={() => navigate('/admin/requests')}
+          >
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center mb-4">
                 <Building2 className="h-6 w-6 text-orange-600" />
@@ -116,7 +127,10 @@ const AdminDashboard = () => {
             </CardHeader>
           </Card>
 
-          <Card className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+          <Card 
+            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+            onClick={() => navigate('/admin/settings')}
+          >
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center mb-4">
                 <Settings className="h-6 w-6 text-secondary" />
@@ -126,7 +140,10 @@ const AdminDashboard = () => {
             </CardHeader>
           </Card>
 
-          <Card className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+          <Card 
+            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+            onClick={() => navigate('/admin/audit-logs')}
+          >
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
                 <Shield className="h-6 w-6 text-accent" />

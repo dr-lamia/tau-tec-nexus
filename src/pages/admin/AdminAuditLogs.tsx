@@ -127,10 +127,10 @@ export default function AdminAuditLogs() {
                   </TableCell>
                   <TableCell className="capitalize">{log.action.replace('_', ' ')}</TableCell>
                   <TableCell className="capitalize">{log.entity_type}</TableCell>
-                  <TableCell className="font-mono text-xs">{log.ip_address || 'N/A'}</TableCell>
+                  <TableCell className="font-mono text-xs">{log.ip_address ? String(log.ip_address) : 'N/A'}</TableCell>
                   <TableCell>
                     <pre className="text-xs max-w-xs overflow-x-auto">
-                      {log.details ? JSON.stringify(log.details, null, 2) : 'N/A'}
+                      {log.details ? String(JSON.stringify(log.details, null, 2)) : 'N/A'}
                     </pre>
                   </TableCell>
                 </TableRow>
