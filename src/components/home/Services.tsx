@@ -19,7 +19,7 @@ const Services = () => {
       description: "Customized training programs for your organization. Upskill your workforce with industry-relevant content.",
       color: "text-secondary",
       bgColor: "bg-secondary/10",
-      link: "/auth",
+      link: "/corporate-training",
     },
     {
       icon: BrainCircuit,
@@ -27,7 +27,7 @@ const Services = () => {
       description: "Leverage cutting-edge AI solutions and data analytics to drive business insights and intelligent decision-making.",
       color: "text-accent",
       bgColor: "bg-accent/10",
-      link: "/auth",
+      link: "/ai-analytics",
     },
     {
       icon: Users,
@@ -35,7 +35,7 @@ const Services = () => {
       description: "Learn from industry professionals with years of real-world experience in their respective fields.",
       color: "text-primary",
       bgColor: "bg-primary/10",
-      link: "/courses",
+      link: "/instructors",
     },
     {
       icon: BookOpen,

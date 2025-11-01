@@ -17,6 +17,9 @@ import StudentCourseView from "./pages/student/StudentCourseView";
 import StudentSchedule from "./pages/student/StudentSchedule";
 import StudentDiscussions from "./pages/student/StudentDiscussions";
 import StudentAssignments from "./pages/student/StudentAssignments";
+import CorporateTraining from "./pages/CorporateTraining";
+import AIAnalytics from "./pages/AIAnalytics";
+import Instructors from "./pages/Instructors";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -97,6 +100,9 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route path="/corporate-training" element={<CorporateTraining />} />
+            <Route path="/ai-analytics" element={<AIAnalytics />} />
+            <Route path="/instructors" element={<Instructors />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
