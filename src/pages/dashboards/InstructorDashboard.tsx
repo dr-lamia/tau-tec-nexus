@@ -20,6 +20,35 @@ interface Course {
   thumbnail_url: string | null;
 }
 
+interface Session {
+  id: string;
+  title: string;
+  session_date: string;
+  duration_minutes: number;
+  zoom_link: string | null;
+  location: string | null;
+  course_id: string;
+  courses?: {
+    title: string;
+  };
+}
+
+interface Submission {
+  id: string;
+  submitted_at: string;
+  assignment_id: string;
+  student_id: string;
+  assignments?: {
+    title: string;
+    courses?: {
+      title: string;
+    };
+  };
+  profiles?: {
+    full_name: string;
+  };
+}
+
 interface Stats {
   totalCourses: number;
   totalStudents: number;
@@ -32,6 +61,8 @@ const InstructorDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [courses, setCourses] = useState<Course[]>([]);
+  const [upcomingSessions, setUpcomingSessions] = useState<Session[]>([]);
+  const [pendingSubmissions, setPendingSubmissions] = useState<Submission[]>([]);
   const [stats, setStats] = useState<Stats>({
     totalCourses: 0,
     totalStudents: 0,
@@ -69,19 +100,50 @@ const InstructorDashboard = () => {
         studentsCount = count || 0;
       }
 
-      // Fetch upcoming sessions
-      const { count: sessionsCount } = await supabase
+      // Fetch upcoming sessions with course details
+      const { data: sessionsData, count: sessionsCount } = await supabase
         .from("course_sessions")
-        .select("*", { count: "exact", head: true })
+        .select("*, courses(title)", { count: "exact" })
         .in("course_id", coursesData?.map(c => c.id) || [])
-        .gte("session_date", new Date().toISOString());
+        .gte("session_date", new Date().toISOString())
+        .order("session_date", { ascending: true });
 
-      // Fetch pending submissions
-      const { count: submissionsCount } = await supabase
+      setUpcomingSessions(sessionsData || []);
+
+      // Fetch pending submissions with details
+      const { data: submissionsData, count: submissionsCount } = await supabase
         .from("assignment_submissions")
-        .select("assignment_id, assignments!inner(course_id)", { count: "exact", head: true })
-        .in("assignments.course_id", coursesData?.map(c => c.id) || [])
-        .is("grade", null);
+        .select(`
+          *,
+          assignments(title, course_id, courses(title))
+        `, { count: "exact" })
+        .is("grade", null)
+        .order("submitted_at", { ascending: false })
+        .limit(5);
+
+      // Get student names for submissions
+      const submissionsWithProfiles = await Promise.all(
+        (submissionsData || []).map(async (sub) => {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("full_name")
+            .eq("id", sub.student_id)
+            .single();
+          
+          return {
+            ...sub,
+            profiles: profile || { full_name: "Unknown" }
+          };
+        })
+      );
+
+      // Filter submissions that belong to instructor's courses
+      const instructorCourseIds = coursesData?.map(c => c.id) || [];
+      const filteredSubmissions = submissionsWithProfiles.filter(sub => 
+        instructorCourseIds.includes(sub.assignments?.course_id)
+      );
+
+      setPendingSubmissions(filteredSubmissions);
 
       setStats({
         totalCourses: coursesData?.length || 0,

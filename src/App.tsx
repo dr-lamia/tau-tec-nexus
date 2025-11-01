@@ -12,6 +12,7 @@ import Courses from "./pages/Courses";
 import CourseDetail from "./pages/CourseDetail";
 import CreateCourse from "./pages/instructor/CreateCourse";
 import EditCourse from "./pages/instructor/EditCourse";
+import InstructorAssignments from "./pages/instructor/InstructorAssignments";
 import StudentCourseView from "./pages/student/StudentCourseView";
 import StudentSchedule from "./pages/student/StudentSchedule";
 import StudentDiscussions from "./pages/student/StudentDiscussions";
@@ -57,6 +58,14 @@ const App = () => (
               } 
             />
             <Route 
+              path="/instructor/assignments" 
+              element={
+                <ProtectedRoute allowedRoles={["instructor"]}>
+                  <InstructorAssignments />
+                </ProtectedRoute>
+              } 
+            />
+            <Route
               path="/student/course/:id" 
               element={
                 <ProtectedRoute>
