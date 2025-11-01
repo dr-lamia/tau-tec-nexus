@@ -1,5 +1,4 @@
 import { useAuth } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button";
 import StudentDashboard from "./dashboards/StudentDashboard";
 import InstructorDashboard from "./dashboards/InstructorDashboard";
 import CompanyDashboard from "./dashboards/CompanyDashboard";
@@ -16,6 +15,18 @@ const Dashboard = () => {
     );
   }
 
+  // If no role found, show message
+  if (!userRole) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">No Role Assigned</h2>
+          <p className="text-muted-foreground">Please contact support to get your account set up.</p>
+        </div>
+      </div>
+    );
+  }
+
   // Route to appropriate dashboard based on role
   switch (userRole) {
     case "student":
@@ -27,20 +38,7 @@ const Dashboard = () => {
     case "admin":
       return <AdminDashboard />;
     default:
-      // If no role is set, show an error message
-      return (
-        <div className="min-h-screen flex items-center justify-center p-4">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4">No Role Assigned</h1>
-            <p className="text-muted-foreground mb-4">
-              Your account doesn't have a role assigned yet. Please contact support.
-            </p>
-            <Button onClick={() => window.location.href = "/"}>
-              Return to Home
-            </Button>
-          </div>
-        </div>
-      );
+      return <StudentDashboard />;
   }
 };
 

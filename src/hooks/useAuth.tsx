@@ -33,6 +33,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchUserRole = async (userId: string) => {
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .limit(1)
+        .single();
+      
+      if (roles) {
+        setUserRole(roles.role as UserRole);
+      }
+    };
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -40,26 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch user role immediately without setTimeout
-          const fetchRole = async () => {
-            try {
-              const { data: roles } = await supabase
-                .from("user_roles")
-                .select("role")
-                .eq("user_id", session.user.id)
-                .limit(1)
-                .single();
-              
-              if (roles) {
-                setUserRole(roles.role as UserRole);
-              } else {
-                setUserRole(null);
-              }
-            } catch {
-              setUserRole(null);
-            }
-          };
-          fetchRole();
+          fetchUserRole(session.user.id);
         } else {
           setUserRole(null);
         }
@@ -72,27 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        const fetchRole = async () => {
-          try {
-            const { data: roles } = await supabase
-              .from("user_roles")
-              .select("role")
-              .eq("user_id", session.user.id)
-              .limit(1)
-              .single();
-            
-            if (roles) {
-              setUserRole(roles.role as UserRole);
-            } else {
-              setUserRole(null);
-            }
-          } catch {
-            setUserRole(null);
-          } finally {
-            setLoading(false);
-          }
-        };
-        fetchRole();
+        fetchUserRole(session.user.id).then(() => setLoading(false));
       } else {
         setLoading(false);
       }
@@ -134,6 +108,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .insert({ user_id: data.user.id, role });
 
       if (roleError) return { error: roleError };
+
+      // Explicitly fetch and set the role
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", data.user.id)
+        .limit(1)
+        .single();
+      
+      if (roles) {
+        setUserRole(roles.role as UserRole);
+      }
 
       return { error: null };
     } catch (error) {
