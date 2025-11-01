@@ -24,6 +24,7 @@ const CreateCourse = () => {
     duration_hours: number;
     price: number;
     thumbnail_url: string;
+    total_sessions: number;
   }>({
     title: "",
     description: "",
@@ -32,6 +33,7 @@ const CreateCourse = () => {
     duration_hours: 0,
     price: 0,
     thumbnail_url: "",
+    total_sessions: 1,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,6 +52,7 @@ const CreateCourse = () => {
           duration_hours: formData.duration_hours,
           price: formData.price,
           thumbnail_url: formData.thumbnail_url || null,
+          total_sessions: formData.total_sessions,
           instructor_id: user.id,
           status: "draft",
         }])
@@ -173,6 +176,22 @@ const CreateCourse = () => {
                     onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="total_sessions">Number of Sessions *</Label>
+                <Input
+                  id="total_sessions"
+                  type="number"
+                  required
+                  min="1"
+                  value={formData.total_sessions}
+                  onChange={(e) => setFormData({ ...formData, total_sessions: parseInt(e.target.value) || 1 })}
+                  placeholder="e.g., 12"
+                />
+                <p className="text-sm text-muted-foreground">
+                  Total number of sessions planned for this course. Used to calculate student progress based on attendance.
+                </p>
               </div>
 
               <div className="space-y-2">

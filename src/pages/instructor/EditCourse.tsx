@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { SessionsTab } from "@/components/course/SessionsTab";
 import { MaterialsTab } from "@/components/course/MaterialsTab";
 import { AssignmentsTab } from "@/components/course/AssignmentsTab";
+import { EnrolledStudentsTab } from "@/components/course/EnrolledStudentsTab";
 
 const EditCourse = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +32,7 @@ const EditCourse = () => {
     price: number;
     thumbnail_url: string;
     status: string;
+    total_sessions: number;
   }>({
     title: "",
     description: "",
@@ -40,6 +42,7 @@ const EditCourse = () => {
     price: 0,
     thumbnail_url: "",
     status: "draft",
+    total_sessions: 1,
   });
 
   useEffect(() => {
@@ -92,6 +95,7 @@ const EditCourse = () => {
           duration_hours: formData.duration_hours,
           price: formData.price,
           thumbnail_url: formData.thumbnail_url || null,
+          total_sessions: formData.total_sessions,
         })
         .eq("id", id);
 
@@ -138,6 +142,7 @@ const EditCourse = () => {
             <TabsTrigger value="sessions">Sessions</TabsTrigger>
             <TabsTrigger value="materials">Materials</TabsTrigger>
             <TabsTrigger value="assignments">Assignments</TabsTrigger>
+            <TabsTrigger value="students">Enrolled Students</TabsTrigger>
           </TabsList>
 
           <TabsContent value="details">
@@ -228,6 +233,21 @@ const EditCourse = () => {
                   </div>
 
                   <div className="space-y-2">
+                    <Label htmlFor="total_sessions">Number of Sessions *</Label>
+                    <Input
+                      id="total_sessions"
+                      type="number"
+                      required
+                      min="1"
+                      value={formData.total_sessions}
+                      onChange={(e) => setFormData({ ...formData, total_sessions: parseInt(e.target.value) || 1 })}
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      Used to calculate student progress based on attendance
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="thumbnail_url">Thumbnail URL</Label>
                     <Input
                       id="thumbnail_url"
@@ -287,6 +307,20 @@ const EditCourse = () => {
               </CardHeader>
               <CardContent>
                 <AssignmentsTab courseId={id!} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="students">
+            <Card className="gradient-card shadow-medium">
+              <CardHeader>
+                <CardTitle>Enrolled Students</CardTitle>
+                <CardDescription>
+                  View student enrollment, progress, and attendance tracking
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <EnrolledStudentsTab courseId={id!} totalSessions={formData.total_sessions} />
               </CardContent>
             </Card>
           </TabsContent>

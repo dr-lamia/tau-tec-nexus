@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
+import { SessionAttendanceDialog } from "@/components/course/SessionAttendanceDialog";
 
 interface Session {
   id: string;
@@ -361,13 +362,22 @@ export const SessionsTab = ({ courseId, isInstructor = false }: SessionsTabProps
                       </div>
                     </CollapsibleTrigger>
                     {isInstructor && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteSession(session.id)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
+                      <div className="flex gap-2">
+                        <SessionAttendanceDialog
+                          sessionId={session.id}
+                          courseId={courseId}
+                          sessionTitle={session.title}
+                          sessionDate={session.session_date}
+                          onAttendanceMarked={fetchSessions}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteSession(session.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
                     )}
                   </div>
 
