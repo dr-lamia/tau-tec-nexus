@@ -12,6 +12,7 @@ import Courses from "./pages/Courses";
 import CourseDetail from "./pages/CourseDetail";
 import CreateCourse from "./pages/instructor/CreateCourse";
 import EditCourse from "./pages/instructor/EditCourse";
+import StudentCourseView from "./pages/student/StudentCourseView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <EditCourse />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/student/course/:id" 
+              element={
+                <ProtectedRoute>
+                  <StudentCourseView />
                 </ProtectedRoute>
               } 
             />
