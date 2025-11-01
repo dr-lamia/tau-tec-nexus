@@ -241,6 +241,7 @@ export type Database = {
           status: Database["public"]["Enums"]["course_status"]
           thumbnail_url: string | null
           title: string
+          total_sessions: number
           updated_at: string
         }
         Insert: {
@@ -255,6 +256,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["course_status"]
           thumbnail_url?: string | null
           title: string
+          total_sessions?: number
           updated_at?: string
         }
         Update: {
@@ -269,6 +271,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["course_status"]
           thumbnail_url?: string | null
           title?: string
+          total_sessions?: number
           updated_at?: string
         }
         Relationships: []
@@ -444,6 +447,54 @@ export type Database = {
             columns: ["request_id"]
             isOneToOne: false
             referencedRelation: "company_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      session_attendance: {
+        Row: {
+          attended: boolean
+          course_id: string
+          created_at: string
+          id: string
+          marked_at: string
+          notes: string | null
+          session_id: string
+          student_id: string
+        }
+        Insert: {
+          attended?: boolean
+          course_id: string
+          created_at?: string
+          id?: string
+          marked_at?: string
+          notes?: string | null
+          session_id: string
+          student_id: string
+        }
+        Update: {
+          attended?: boolean
+          course_id?: string
+          created_at?: string
+          id?: string
+          marked_at?: string
+          notes?: string | null
+          session_id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_attendance_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_attendance_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "course_sessions"
             referencedColumns: ["id"]
           },
         ]
