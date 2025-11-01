@@ -115,8 +115,86 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: Database["public"]["Enums"]["audit_action"]
+          actor_id: string | null
+          created_at: string | null
+          details: Json | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: unknown
+          user_agent: string | null
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["audit_action"]
+          actor_id?: string | null
+          created_at?: string | null
+          details?: Json | null
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["audit_action"]
+          actor_id?: string | null
+          created_at?: string | null
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      company_request_files: {
+        Row: {
+          created_at: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          mime_type: string | null
+          request_id: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          request_id: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          request_id?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_request_files_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "company_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_requests: {
         Row: {
+          admin_notes: string | null
           budget: number | null
           company_id: string
           created_at: string
@@ -126,11 +204,14 @@ export type Database = {
           employee_count: number | null
           id: string
           project_type: Database["public"]["Enums"]["project_type"]
+          reviewed_at: string | null
+          reviewed_by: string | null
           status: Database["public"]["Enums"]["request_status"]
           title: string
           updated_at: string
         }
         Insert: {
+          admin_notes?: string | null
           budget?: number | null
           company_id: string
           created_at?: string
@@ -140,11 +221,14 @@ export type Database = {
           employee_count?: number | null
           id?: string
           project_type: Database["public"]["Enums"]["project_type"]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           status?: Database["public"]["Enums"]["request_status"]
           title: string
           updated_at?: string
         }
         Update: {
+          admin_notes?: string | null
           budget?: number | null
           company_id?: string
           created_at?: string
@@ -154,6 +238,8 @@ export type Database = {
           employee_count?: number | null
           id?: string
           project_type?: Database["public"]["Enums"]["project_type"]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           status?: Database["public"]["Enums"]["request_status"]
           title?: string
           updated_at?: string
@@ -428,6 +514,72 @@ export type Database = {
         }
         Relationships: []
       }
+      meetings: {
+        Row: {
+          company_request_id: string | null
+          course_session_id: string | null
+          created_at: string | null
+          description: string | null
+          duration_minutes: number | null
+          host_id: string | null
+          id: string
+          meeting_type: Database["public"]["Enums"]["meeting_type"]
+          scheduled_at: string
+          title: string
+          updated_at: string | null
+          zoom_join_url: string | null
+          zoom_meeting_id: string | null
+          zoom_start_url: string | null
+        }
+        Insert: {
+          company_request_id?: string | null
+          course_session_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          host_id?: string | null
+          id?: string
+          meeting_type: Database["public"]["Enums"]["meeting_type"]
+          scheduled_at: string
+          title: string
+          updated_at?: string | null
+          zoom_join_url?: string | null
+          zoom_meeting_id?: string | null
+          zoom_start_url?: string | null
+        }
+        Update: {
+          company_request_id?: string | null
+          course_session_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          host_id?: string | null
+          id?: string
+          meeting_type?: Database["public"]["Enums"]["meeting_type"]
+          scheduled_at?: string
+          title?: string
+          updated_at?: string | null
+          zoom_join_url?: string | null
+          zoom_meeting_id?: string | null
+          zoom_start_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meetings_company_request_id_fkey"
+            columns: ["company_request_id"]
+            isOneToOne: false
+            referencedRelation: "company_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meetings_course_session_id_fkey"
+            columns: ["course_session_id"]
+            isOneToOne: false
+            referencedRelation: "course_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -452,6 +604,36 @@ export type Database = {
           read?: boolean | null
           title?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      platform_settings: {
+        Row: {
+          category: string
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          category: string
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          category?: string
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -577,6 +759,59 @@ export type Database = {
           },
         ]
       }
+      transactions: {
+        Row: {
+          amount: number
+          course_id: string | null
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          id: string
+          payment_method: string | null
+          payment_status: Database["public"]["Enums"]["payment_status"] | null
+          stripe_payment_id: string | null
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          course_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          id?: string
+          payment_method?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"] | null
+          stripe_payment_id?: string | null
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          course_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          id?: string
+          payment_method?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"] | null
+          stripe_payment_id?: string | null
+          transaction_type?: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -621,8 +856,24 @@ export type Database = {
     Enums: {
       app_role: "student" | "instructor" | "company" | "admin"
       application_status: "pending" | "approved" | "rejected"
+      audit_action:
+        | "user_login"
+        | "user_logout"
+        | "user_signup"
+        | "course_created"
+        | "course_updated"
+        | "course_deleted"
+        | "request_approved"
+        | "request_rejected"
+        | "settings_changed"
+        | "role_assigned"
       course_status: "draft" | "published" | "archived"
       delivery_mode: "online" | "offline" | "hybrid"
+      meeting_type:
+        | "course_session"
+        | "company_consultation"
+        | "company_training"
+      payment_status: "pending" | "paid" | "failed" | "refunded"
       project_type: "corporate_training" | "ai_data_analytics"
       request_status:
         | "pending"
@@ -631,6 +882,7 @@ export type Database = {
         | "rejected"
         | "completed"
       student_status: "current_student" | "graduated"
+      transaction_type: "enrollment_payment" | "instructor_payout"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -760,8 +1012,26 @@ export const Constants = {
     Enums: {
       app_role: ["student", "instructor", "company", "admin"],
       application_status: ["pending", "approved", "rejected"],
+      audit_action: [
+        "user_login",
+        "user_logout",
+        "user_signup",
+        "course_created",
+        "course_updated",
+        "course_deleted",
+        "request_approved",
+        "request_rejected",
+        "settings_changed",
+        "role_assigned",
+      ],
       course_status: ["draft", "published", "archived"],
       delivery_mode: ["online", "offline", "hybrid"],
+      meeting_type: [
+        "course_session",
+        "company_consultation",
+        "company_training",
+      ],
+      payment_status: ["pending", "paid", "failed", "refunded"],
       project_type: ["corporate_training", "ai_data_analytics"],
       request_status: [
         "pending",
@@ -771,6 +1041,7 @@ export const Constants = {
         "completed",
       ],
       student_status: ["current_student", "graduated"],
+      transaction_type: ["enrollment_payment", "instructor_payout"],
     },
   },
 } as const
