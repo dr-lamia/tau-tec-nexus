@@ -320,19 +320,13 @@ const InstructorDashboard = () => {
           <TabsContent value="sessions">
             <Card className="gradient-card border shadow-medium">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Upcoming Sessions</CardTitle>
-                    <CardDescription>Manage your course sessions and calendar</CardDescription>
-                  </div>
-                  <Button onClick={() => navigate("/instructor/sessions")}>
-                    <Calendar className="mr-2 h-4 w-4" />
-                    View Calendar
-                  </Button>
-                </div>
+                <CardTitle>Upcoming Sessions</CardTitle>
+                <CardDescription>Manage sessions for each course in the Edit Course page</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Session management coming soon...</p>
+                <p className="text-muted-foreground">
+                  To schedule and manage sessions, go to any course and click "Edit" to access the Sessions tab.
+                </p>
               </CardContent>
             </Card>
           </TabsContent>
