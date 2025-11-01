@@ -59,6 +59,7 @@ export type Database = {
           description: string | null
           due_date: string | null
           id: string
+          session_id: string | null
           title: string
         }
         Insert: {
@@ -67,6 +68,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          session_id?: string | null
           title: string
         }
         Update: {
@@ -75,6 +77,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          session_id?: string | null
           title?: string
         }
         Relationships: [
@@ -83,6 +86,13 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "course_sessions"
             referencedColumns: ["id"]
           },
         ]
@@ -138,6 +148,7 @@ export type Database = {
           file_type: string
           file_url: string
           id: string
+          session_id: string | null
           title: string
           uploaded_at: string
         }
@@ -146,6 +157,7 @@ export type Database = {
           file_type: string
           file_url: string
           id?: string
+          session_id?: string | null
           title: string
           uploaded_at?: string
         }
@@ -154,6 +166,7 @@ export type Database = {
           file_type?: string
           file_url?: string
           id?: string
+          session_id?: string | null
           title?: string
           uploaded_at?: string
         }
@@ -163,6 +176,13 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_materials_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "course_sessions"
             referencedColumns: ["id"]
           },
         ]

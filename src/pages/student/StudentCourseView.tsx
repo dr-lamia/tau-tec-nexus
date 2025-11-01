@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Download, Calendar, FileText, Video, MapPin } from "lucide-react";
+import { ArrowLeft, Download, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { SessionsTab } from "@/components/course/SessionsTab";
 
 interface Course {
   id: string;
@@ -26,15 +27,6 @@ interface Material {
   file_type: string;
   file_url: string;
   uploaded_at: string;
-}
-
-interface Session {
-  id: string;
-  title: string;
-  session_date: string;
-  duration_minutes: number;
-  location: string | null;
-  zoom_link: string | null;
 }
 
 interface Assignment {
@@ -58,7 +50,6 @@ const StudentCourseView = () => {
   const { toast } = useToast();
   const [course, setCourse] = useState<Course | null>(null);
   const [materials, setMaterials] = useState<Material[]>([]);
-  const [sessions, setSessions] = useState<Session[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -108,23 +99,15 @@ const StudentCourseView = () => {
 
       setCourse({ ...courseData, instructor });
 
-      // Fetch materials
+      // Fetch materials (not linked to sessions)
       const { data: materialsData } = await supabase
         .from("course_materials")
         .select("*")
         .eq("course_id", id)
+        .is("session_id", null)
         .order("uploaded_at", { ascending: false });
 
       setMaterials(materialsData || []);
-
-      // Fetch sessions
-      const { data: sessionsData } = await supabase
-        .from("course_sessions")
-        .select("*")
-        .eq("course_id", id)
-        .order("session_date", { ascending: true });
-
-      setSessions(sessionsData || []);
 
       // Fetch assignments with submissions
       const { data: assignmentsData } = await supabase
@@ -251,53 +234,10 @@ const StudentCourseView = () => {
             <Card className="gradient-card shadow-medium">
               <CardHeader>
                 <CardTitle>Course Sessions</CardTitle>
-                <CardDescription>Scheduled sessions and meetings</CardDescription>
+                <CardDescription>Scheduled sessions with materials and assignments</CardDescription>
               </CardHeader>
               <CardContent>
-                {sessions.length === 0 ? (
-                  <p className="text-muted-foreground">No sessions scheduled yet</p>
-                ) : (
-                  <div className="space-y-4">
-                    {sessions.map((session) => {
-                      const isPast = new Date(session.session_date) < new Date();
-                      return (
-                        <div
-                          key={session.id}
-                          className="p-4 rounded-lg border bg-card"
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start gap-3">
-                              <Calendar className="h-5 w-5 text-primary mt-1" />
-                              <div>
-                                <p className="font-medium">{session.title}</p>
-                                <p className="text-sm text-muted-foreground">
-                                  {new Date(session.session_date).toLocaleString()}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                  Duration: {session.duration_minutes} minutes
-                                </p>
-                                {session.location && (
-                                  <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                                    <MapPin className="h-3 w-3" />
-                                    {session.location}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                            {session.zoom_link && !isPast && (
-                              <Button size="sm" asChild>
-                                <a href={session.zoom_link} target="_blank" rel="noopener noreferrer">
-                                  <Video className="h-4 w-4 mr-2" />
-                                  Join
-                                </a>
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                <SessionsTab courseId={id!} isInstructor={false} />
               </CardContent>
             </Card>
           </TabsContent>

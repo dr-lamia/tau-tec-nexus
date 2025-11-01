@@ -262,7 +262,7 @@ const EditCourse = () => {
                 <CardDescription>Manage sessions and schedule</CardDescription>
               </CardHeader>
               <CardContent>
-                <SessionsTab courseId={id!} />
+                <SessionsTab courseId={id!} isInstructor={true} />
               </CardContent>
             </Card>
           </TabsContent>
