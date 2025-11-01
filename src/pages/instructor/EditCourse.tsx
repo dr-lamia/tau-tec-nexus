@@ -11,6 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { SessionsTab } from "@/components/course/SessionsTab";
+import { MaterialsTab } from "@/components/course/MaterialsTab";
+import { AssignmentsTab } from "@/components/course/AssignmentsTab";
 
 const EditCourse = () => {
   const { id } = useParams<{ id: string }>();
@@ -259,7 +262,7 @@ const EditCourse = () => {
                 <CardDescription>Manage sessions and schedule</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Session management coming soon...</p>
+                <SessionsTab courseId={id!} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -271,7 +274,7 @@ const EditCourse = () => {
                 <CardDescription>Upload videos, PDFs, and other resources</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Materials management coming soon...</p>
+                <MaterialsTab courseId={id!} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -283,7 +286,7 @@ const EditCourse = () => {
                 <CardDescription>Create and manage course assignments</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Assignment management coming soon...</p>
+                <AssignmentsTab courseId={id!} />
               </CardContent>
             </Card>
           </TabsContent>
