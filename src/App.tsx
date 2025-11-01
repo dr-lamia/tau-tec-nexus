@@ -20,6 +20,7 @@ import StudentAssignments from "./pages/student/StudentAssignments";
 import CorporateTraining from "./pages/CorporateTraining";
 import AIAnalytics from "./pages/AIAnalytics";
 import Instructors from "./pages/Instructors";
+import InstructorApplication from "./pages/InstructorApplication";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -103,6 +104,7 @@ const App = () => (
             <Route path="/corporate-training" element={<CorporateTraining />} />
             <Route path="/ai-analytics" element={<AIAnalytics />} />
             <Route path="/instructors" element={<Instructors />} />
+            <Route path="/become-instructor" element={<InstructorApplication />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

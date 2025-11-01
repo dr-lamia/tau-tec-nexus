@@ -36,7 +36,7 @@ const Hero = () => {
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Link to="/auth?role=instructor">
+              <Link to="/become-instructor">
                 <Button variant="outline" size="lg">
                   Become an Instructor
                 </Button>

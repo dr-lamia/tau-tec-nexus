@@ -35,24 +35,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch user role after auth state changes
-          setTimeout(async () => {
-            const { data: roles } = await supabase
-              .from("user_roles")
-              .select("role")
-              .eq("user_id", session.user.id)
-              .limit(1)
-              .single();
-            
-            if (roles) {
-              setUserRole(roles.role as UserRole);
+          // Fetch user role immediately without setTimeout
+          const fetchRole = async () => {
+            try {
+              const { data: roles } = await supabase
+                .from("user_roles")
+                .select("role")
+                .eq("user_id", session.user.id)
+                .limit(1)
+                .single();
+              
+              if (roles) {
+                setUserRole(roles.role as UserRole);
+              } else {
+                setUserRole(null);
+              }
+            } catch {
+              setUserRole(null);
             }
-          }, 0);
+          };
+          fetchRole();
         } else {
           setUserRole(null);
         }
@@ -65,18 +72,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", session.user.id)
-          .limit(1)
-          .single()
-          .then(({ data: roles }) => {
+        const fetchRole = async () => {
+          try {
+            const { data: roles } = await supabase
+              .from("user_roles")
+              .select("role")
+              .eq("user_id", session.user.id)
+              .limit(1)
+              .single();
+            
             if (roles) {
               setUserRole(roles.role as UserRole);
+            } else {
+              setUserRole(null);
             }
+          } catch {
+            setUserRole(null);
+          } finally {
             setLoading(false);
-          });
+          }
+        };
+        fetchRole();
       } else {
         setLoading(false);
       }

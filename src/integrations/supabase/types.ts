@@ -356,6 +356,60 @@ export type Database = {
           },
         ]
       }
+      instructor_applications: {
+        Row: {
+          bio: string
+          created_at: string
+          cv_url: string | null
+          email: string
+          expertise: string
+          full_name: string
+          id: string
+          linkedin_url: string | null
+          notes: string | null
+          phone: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["application_status"]
+          user_id: string | null
+          years_experience: number | null
+        }
+        Insert: {
+          bio: string
+          created_at?: string
+          cv_url?: string | null
+          email: string
+          expertise: string
+          full_name: string
+          id?: string
+          linkedin_url?: string | null
+          notes?: string | null
+          phone: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          user_id?: string | null
+          years_experience?: number | null
+        }
+        Update: {
+          bio?: string
+          created_at?: string
+          cv_url?: string | null
+          email?: string
+          expertise?: string
+          full_name?: string
+          id?: string
+          linkedin_url?: string | null
+          notes?: string | null
+          phone?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          user_id?: string | null
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -541,6 +595,7 @@ export type Database = {
     }
     Enums: {
       app_role: "student" | "instructor" | "company" | "admin"
+      application_status: "pending" | "approved" | "rejected"
       course_status: "draft" | "published" | "archived"
       delivery_mode: "online" | "offline" | "hybrid"
       project_type: "corporate_training" | "ai_data_analytics"
@@ -679,6 +734,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["student", "instructor", "company", "admin"],
+      application_status: ["pending", "approved", "rejected"],
       course_status: ["draft", "published", "archived"],
       delivery_mode: ["online", "offline", "hybrid"],
       project_type: ["corporate_training", "ai_data_analytics"],
