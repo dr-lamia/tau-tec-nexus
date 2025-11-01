@@ -11,6 +11,7 @@ const Services = () => {
       description: "Access hundreds of courses across various domains with flexible learning modes. Learn at your own pace with lifetime access.",
       color: "text-primary",
       bgColor: "bg-primary/10",
+      link: "/courses",
     },
     {
       icon: Building2,
@@ -18,6 +19,7 @@ const Services = () => {
       description: "Customized training programs for your organization. Upskill your workforce with industry-relevant content.",
       color: "text-secondary",
       bgColor: "bg-secondary/10",
+      link: "/auth",
     },
     {
       icon: BrainCircuit,
@@ -25,6 +27,7 @@ const Services = () => {
       description: "Leverage cutting-edge AI solutions and data analytics to drive business insights and intelligent decision-making.",
       color: "text-accent",
       bgColor: "bg-accent/10",
+      link: "/auth",
     },
     {
       icon: Users,
@@ -32,6 +35,7 @@ const Services = () => {
       description: "Learn from industry professionals with years of real-world experience in their respective fields.",
       color: "text-primary",
       bgColor: "bg-primary/10",
+      link: "/courses",
     },
     {
       icon: BookOpen,
@@ -39,6 +43,7 @@ const Services = () => {
       description: "Access comprehensive course content including videos, PDFs, assignments, and interactive discussions.",
       color: "text-secondary",
       bgColor: "bg-secondary/10",
+      link: "/courses",
     },
     {
       icon: TrendingUp,
@@ -46,6 +51,7 @@ const Services = () => {
       description: "Track your progress, earn certifications, and advance your career with our structured learning paths.",
       color: "text-accent",
       bgColor: "bg-accent/10",
+      link: "/auth",
     },
   ];
 
@@ -61,23 +67,24 @@ const Services = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {services.map((service, index) => (
-            <Card
-              key={index}
-              className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <CardHeader>
-                <div className={`w-14 h-14 rounded-xl ${service.bgColor} flex items-center justify-center mb-4`}>
-                  <service.icon className={`h-7 w-7 ${service.color}`} />
-                </div>
-                <CardTitle className="text-xl">{service.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base leading-relaxed">
-                  {service.description}
-                </CardDescription>
-              </CardContent>
-            </Card>
+            <Link key={index} to={service.link} className="block">
+              <Card
+                className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 animate-fade-in cursor-pointer h-full"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <CardHeader>
+                  <div className={`w-14 h-14 rounded-xl ${service.bgColor} flex items-center justify-center mb-4`}>
+                    <service.icon className={`h-7 w-7 ${service.color}`} />
+                  </div>
+                  <CardTitle className="text-xl">{service.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-base leading-relaxed">
+                    {service.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
 
