@@ -39,6 +39,7 @@ const InstructorDashboard = () => {
     pendingSubmissions: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("courses");
 
   useEffect(() => {
     if (user) {
@@ -59,10 +60,14 @@ const InstructorDashboard = () => {
       setCourses(coursesData || []);
 
       // Fetch total students across all courses
-      const { count: studentsCount } = await supabase
-        .from("enrollments")
-        .select("*", { count: "exact", head: true })
-        .in("course_id", coursesData?.map(c => c.id) || []);
+      let studentsCount = 0;
+      if (coursesData && coursesData.length > 0) {
+        const { count } = await supabase
+          .from("enrollments")
+          .select("*", { count: "exact", head: true })
+          .in("course_id", coursesData.map(c => c.id));
+        studentsCount = count || 0;
+      }
 
       // Fetch upcoming sessions
       const { count: sessionsCount } = await supabase
@@ -182,7 +187,10 @@ const InstructorDashboard = () => {
 
         {/* Stats */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <Card className="gradient-card border shadow-medium">
+          <Card 
+            className="gradient-card border shadow-medium cursor-pointer hover:shadow-strong transition-all"
+            onClick={() => setActiveTab("courses")}
+          >
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 My Courses
@@ -193,7 +201,10 @@ const InstructorDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="gradient-card border shadow-medium">
+          <Card 
+            className="gradient-card border shadow-medium cursor-pointer hover:shadow-strong transition-all"
+            onClick={() => setActiveTab("courses")}
+          >
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Total Students
@@ -204,7 +215,10 @@ const InstructorDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="gradient-card border shadow-medium">
+          <Card 
+            className="gradient-card border shadow-medium cursor-pointer hover:shadow-strong transition-all"
+            onClick={() => setActiveTab("sessions")}
+          >
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Upcoming Sessions
@@ -215,7 +229,10 @@ const InstructorDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="gradient-card border shadow-medium">
+          <Card 
+            className="gradient-card border shadow-medium cursor-pointer hover:shadow-strong transition-all"
+            onClick={() => setActiveTab("assignments")}
+          >
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Pending Reviews
@@ -228,7 +245,7 @@ const InstructorDashboard = () => {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="courses" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full max-w-md grid-cols-3">
             <TabsTrigger value="courses">Courses</TabsTrigger>
             <TabsTrigger value="sessions">Sessions</TabsTrigger>
