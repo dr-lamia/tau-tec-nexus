@@ -31,6 +31,7 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import CompanyOverview from "./pages/company/CompanyOverview";
 import CompanyNewRequest from "./pages/company/CompanyNewRequest";
 import CompanyRequestsStatus from "./pages/company/CompanyRequestsStatus";
+import SelectRole from "./pages/SelectRole";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,14 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:id" element={<CourseDetail />} />
+            <Route 
+              path="/select-role"
+              element={
+                <ProtectedRoute>
+                  <SelectRole />
+                </ProtectedRoute>
+              }
+            />
             <Route 
               path="/dashboard" 
               element={

@@ -1,11 +1,22 @@
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import StudentDashboard from "./dashboards/StudentDashboard";
 import InstructorDashboard from "./dashboards/InstructorDashboard";
 import CompanyDashboard from "./dashboards/CompanyDashboard";
 import AdminDashboard from "./dashboards/AdminDashboard";
 
 const Dashboard = () => {
-  const { userRole, loading } = useAuth();
+  const { userRole, availableRoles, loading } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect to role selection if multiple roles but no selection
+  useEffect(() => {
+    if (!loading && !userRole && availableRoles.length > 1) {
+      console.log("Multiple roles detected, redirecting to role selection");
+      navigate("/select-role");
+    }
+  }, [loading, userRole, availableRoles, navigate]);
 
   if (loading) {
     return (

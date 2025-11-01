@@ -14,7 +14,7 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, signIn, signUp } = useAuth();
+  const { user, availableRoles, signIn, signUp } = useAuth();
   const defaultRole = searchParams.get("role") || "student";
 
   const [loginData, setLoginData] = useState({ email: "", password: "" });
@@ -32,9 +32,14 @@ const Auth = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      // If user has multiple roles, go to role selector
+      if (availableRoles.length > 1) {
+        navigate("/select-role");
+      } else if (availableRoles.length === 1) {
+        navigate("/dashboard");
+      }
     }
-  }, [user, navigate]);
+  }, [user, availableRoles, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +61,9 @@ const Auth = () => {
       title: "Login Successful!",
       description: "Welcome back to Tau Tec",
     });
-    navigate("/dashboard");
+    
+    // Note: Navigation will be handled by useEffect in SelectRole or Dashboard
+    // based on availableRoles count
   };
 
   const handleSignup = async (e: React.FormEvent) => {

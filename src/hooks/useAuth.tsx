@@ -9,6 +9,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   userRole: UserRole | null;
+  availableRoles: UserRole[];
   loading: boolean;
   signUp: (
     email: string,
@@ -21,6 +22,7 @@ interface AuthContextType {
   ) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  selectRole: (role: UserRole) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,27 +31,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [availableRoles, setAvailableRoles] = useState<UserRole[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserRole = async (userId: string, retryCount = 0): Promise<void> => {
       try {
-        const { data: roles, error } = await supabase
+        const { data: rows, error } = await supabase
           .from("user_roles")
           .select("role")
-          .eq("user_id", userId)
-          .limit(1)
-          .maybeSingle();
+          .eq("user_id", userId);
         
         if (error) {
           console.error("Error fetching user role:", error);
           return;
         }
         
-        if (roles) {
-          console.log("User role fetched:", roles.role);
-          setUserRole(roles.role as UserRole);
+        if (rows && rows.length > 0) {
+          const roles = rows.map(r => r.role as UserRole);
+          setAvailableRoles(roles);
+          console.log("User roles fetched:", roles);
+          
+          // Only auto-select if user has single role
+          if (roles.length === 1) {
+            setUserRole(roles[0]);
+          } else {
+            console.log("Multiple roles detected, awaiting user selection");
+            setUserRole(null);
+          }
         } else if (retryCount < 3) {
           // Retry after a short delay for signup scenarios
           console.log(`Role not found, retrying... (${retryCount + 1}/3)`);
@@ -126,15 +136,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (roleError) return { error: roleError };
 
       // Explicitly fetch and set the role
-      const { data: roles } = await supabase
+      const { data: rows } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", data.user.id)
-        .limit(1)
-        .single();
+        .eq("user_id", data.user.id);
       
-      if (roles) {
-        setUserRole(roles.role as UserRole);
+      if (rows && rows.length > 0) {
+        const roles = rows.map(r => r.role as UserRole);
+        setAvailableRoles(roles);
+        
+        // Only auto-select if user has single role
+        if (roles.length === 1) {
+          setUserRole(roles[0]);
+        }
       }
 
       return { error: null };
@@ -156,11 +170,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     setSession(null);
     setUserRole(null);
+    setAvailableRoles([]);
     navigate("/");
   };
 
+  const selectRole = (role: UserRole) => {
+    if (availableRoles.includes(role)) {
+      console.log("Role selected:", role);
+      setUserRole(role);
+    } else {
+      console.error("Attempted to select unavailable role:", role);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, userRole, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, session, userRole, availableRoles, loading, signUp, signIn, signOut, selectRole }}>
       {children}
     </AuthContext.Provider>
   );
