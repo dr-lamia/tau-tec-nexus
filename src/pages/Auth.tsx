@@ -74,9 +74,18 @@ const Auth = () => {
     );
 
     if (error) {
+      let errorMessage = error.message;
+      
+      // Check if it's a role validation error
+      if (error.message?.includes('row-level security') || 
+          error.message?.includes('policy') ||
+          error.message?.includes('violates')) {
+        errorMessage = "You don't have permission to sign up with this role. Admin access requires email approval.";
+      }
+      
       toast({
         title: "Signup Failed",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
       setLoading(false);
@@ -248,6 +257,7 @@ const Auth = () => {
                         <SelectItem value="student">Student</SelectItem>
                         <SelectItem value="instructor">Instructor</SelectItem>
                         <SelectItem value="company">Company</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
