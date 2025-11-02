@@ -838,6 +838,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_admin_role_to_whitelisted_user: {
+        Args: { target_email: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
