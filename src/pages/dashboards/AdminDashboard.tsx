@@ -3,10 +3,20 @@ import { Button } from "@/components/ui/button";
 import { Users, BookOpen, Building2, Settings, LogOut, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { useAdminStats } from "@/hooks/useAdminStats";
 
 const AdminDashboard = () => {
   const { signOut } = useAuth();
   const navigate = useNavigate();
+  const { data: stats, isLoading } = useAdminStats();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -48,7 +58,7 @@ const AdminDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-700">0</div>
+              <div className="text-3xl font-bold text-slate-700">{stats?.totalUsers || 0}</div>
             </CardContent>
           </Card>
 
@@ -59,7 +69,7 @@ const AdminDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-primary">0</div>
+              <div className="text-3xl font-bold text-primary">{stats?.totalCourses || 0}</div>
             </CardContent>
           </Card>
 
@@ -70,7 +80,7 @@ const AdminDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-orange-600">0</div>
+              <div className="text-3xl font-bold text-orange-600">{stats?.activeRequests || 0}</div>
             </CardContent>
           </Card>
 
@@ -81,7 +91,7 @@ const AdminDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-secondary">$0</div>
+              <div className="text-3xl font-bold text-secondary">${stats?.totalRevenue.toFixed(2) || 0}</div>
             </CardContent>
           </Card>
         </div>
