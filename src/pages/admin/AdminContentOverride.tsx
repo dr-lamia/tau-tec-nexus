@@ -21,7 +21,7 @@ export default function AdminContentOverride() {
         .from('courses')
         .select(`
           *,
-          profiles!courses_instructor_id_fkey(full_name)
+          profiles:instructor_id(full_name)
         `)
         .order('created_at', { ascending: false });
 
