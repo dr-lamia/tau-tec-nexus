@@ -48,7 +48,7 @@ export default function AdminAnalytics() {
     }
   });
 
-  if (isLoading) {
+  if (isLoading || !stats) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -120,7 +120,7 @@ export default function AdminAnalytics() {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={stats?.enrollmentsByMonth}>
+              <LineChart data={stats.enrollmentsByMonth || []}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
@@ -141,7 +141,7 @@ export default function AdminAnalytics() {
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={stats?.coursesByCategory}
+                  data={stats.coursesByCategory || []}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -150,7 +150,7 @@ export default function AdminAnalytics() {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {stats?.coursesByCategory.map((entry: any, index: number) => (
+                  {(stats.coursesByCategory || []).map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
