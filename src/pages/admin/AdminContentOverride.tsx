@@ -136,47 +136,55 @@ export default function AdminContentOverride() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {courses?.map((course) => (
-                <TableRow key={course.id}>
-                  <TableCell className="font-medium">{course.title}</TableCell>
-                  <TableCell>{course.instructor_id}</TableCell>
-                  <TableCell>{course.category}</TableCell>
-                  <TableCell>{getStatusBadge(course.status)}</TableCell>
-                  <TableCell>{format(new Date(course.created_at), 'PP')}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => navigate(`/instructor/courses/${course.id}/edit`)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      {course.status !== 'published' && (
+              {courses && courses.length > 0 ? (
+                courses.map((course: any) => (
+                  <TableRow key={course.id}>
+                    <TableCell className="font-medium">{course.title}</TableCell>
+                    <TableCell>{course.profiles?.full_name || 'Unknown'}</TableCell>
+                    <TableCell>{course.category}</TableCell>
+                    <TableCell>{getStatusBadge(course.status)}</TableCell>
+                    <TableCell>{format(new Date(course.created_at), 'PP')}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => publishCourseMutation.mutate(course.id)}
-                          disabled={publishCourseMutation.isPending}
+                          onClick={() => navigate(`/instructor/courses/${course.id}/edit`)}
                         >
-                          <CheckCircle className="h-4 w-4" />
+                          <Edit className="h-4 w-4" />
                         </Button>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          if (confirm('Are you sure you want to delete this course?')) {
-                            deleteCourseMutation.mutate(course.id);
-                          }
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                        {course.status !== 'published' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => publishCourseMutation.mutate(course.id)}
+                            disabled={publishCourseMutation.isPending}
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            if (confirm('Are you sure you want to delete this course?')) {
+                              deleteCourseMutation.mutate(course.id);
+                            }
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    No courses found. Instructors need to create courses first.
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </CardContent>

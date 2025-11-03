@@ -117,24 +117,32 @@ export default function AdminAuditLogs() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredLogs?.map((log) => (
-                <TableRow key={log.id}>
-                  <TableCell className="font-mono text-xs">
-                    {format(new Date(log.created_at), 'PPpp')}
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{log.actor_id || 'System'}</div>
-                  </TableCell>
-                  <TableCell className="capitalize">{log.action.replace('_', ' ')}</TableCell>
-                  <TableCell className="capitalize">{log.entity_type}</TableCell>
-                  <TableCell className="font-mono text-xs">{log.ip_address ? String(log.ip_address) : 'N/A'}</TableCell>
-                  <TableCell>
-                    <pre className="text-xs max-w-xs overflow-x-auto">
-                      {log.details ? String(JSON.stringify(log.details, null, 2)) : 'N/A'}
-                    </pre>
+              {filteredLogs && filteredLogs.length > 0 ? (
+                filteredLogs.map((log) => (
+                  <TableRow key={log.id}>
+                    <TableCell className="font-mono text-xs">
+                      {format(new Date(log.created_at), 'PPpp')}
+                    </TableCell>
+                    <TableCell>
+                      <div className="font-medium">{log.actor_id || 'System'}</div>
+                    </TableCell>
+                    <TableCell className="capitalize">{log.action.replace('_', ' ')}</TableCell>
+                    <TableCell className="capitalize">{log.entity_type}</TableCell>
+                    <TableCell className="font-mono text-xs">{log.ip_address ? String(log.ip_address) : 'N/A'}</TableCell>
+                    <TableCell>
+                      <pre className="text-xs max-w-xs overflow-x-auto">
+                        {log.details ? String(JSON.stringify(log.details, null, 2)) : 'N/A'}
+                      </pre>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    No audit logs found. Activity will be logged here as users interact with the system.
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
 
