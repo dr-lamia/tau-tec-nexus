@@ -26,8 +26,11 @@ const Dashboard = () => {
     );
   }
 
+  // Use the available role if userRole isn't set yet but we have exactly one role
+  const roleToUse = userRole || (availableRoles.length === 1 ? availableRoles[0] : null);
+
   // If no role found, show message
-  if (!userRole) {
+  if (!roleToUse) {
     console.warn("Dashboard: No user role detected");
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -39,10 +42,10 @@ const Dashboard = () => {
     );
   }
 
-  console.log("Dashboard: Routing to dashboard for role:", userRole);
+  console.log("Dashboard: Routing to dashboard for role:", roleToUse);
 
   // Route to appropriate dashboard based on role
-  switch (userRole) {
+  switch (roleToUse) {
     case "student":
       return <StudentDashboard />;
     case "instructor":
