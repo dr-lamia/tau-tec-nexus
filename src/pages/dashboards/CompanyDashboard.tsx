@@ -1,151 +1,207 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, TrendingUp, Calendar, Database, LogOut, Plus } from "lucide-react";
+import { Clock, CheckCircle2, Users, FileText, Plus, Database } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { format } from "date-fns";
 
 const CompanyDashboard = () => {
-  const { signOut } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Fetch company requests
+  const { data: requests = [], isLoading } = useQuery({
+    queryKey: ['company-requests', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const { data, error } = await supabase
+        .from('company_requests')
+        .select('*')
+        .eq('company_id', user.id)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  // Calculate stats
+  const activeRequests = requests.filter(r => r.status === 'pending' || r.status === 'in_review').length;
+  const completedProjects = requests.filter(r => r.status === 'completed').length;
+  const pendingReviews = requests.filter(r => r.status === 'pending').length;
+
+  const getStatusBadge = (status: string) => {
+    const variants: Record<string, { variant: "default" | "secondary" | "destructive" | "outline", label: string }> = {
+      pending: { variant: "outline", label: "Pending" },
+      in_review: { variant: "secondary", label: "In Review" },
+      approved: { variant: "default", label: "Approved" },
+      rejected: { variant: "destructive", label: "Rejected" },
+      completed: { variant: "default", label: "Completed" },
+    };
+    
+    const config = variants[status] || variants.pending;
+    return <Badge variant={config.variant} className={status === 'approved' ? 'bg-green-600' : ''}>{config.label}</Badge>;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-muted/30">
       {/* Header */}
-      <header className="bg-background border-b shadow-soft">
-        <div className="container mx-auto px-4 py-4">
+      <header className="bg-background border-b">
+        <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-orange-600">
-              Company Dashboard
-            </h1>
-            <div className="flex items-center gap-3">
-              <Button 
-                className="bg-orange-600 hover:bg-orange-700 text-white"
-                onClick={() => navigate('/company/new-request')}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                New Request
-              </Button>
-              <Button variant="ghost" onClick={signOut}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout
-              </Button>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Company Dashboard</h1>
+              <p className="text-muted-foreground mt-1">Manage your training and AI projects</p>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 shadow-glow mb-8">
-          <CardHeader>
-            <CardTitle className="text-3xl text-white">Welcome, Enterprise Partner!</CardTitle>
-            <CardDescription className="text-white/80 text-lg">
-              Manage training programs and AI analytics projects
-            </CardDescription>
-          </CardHeader>
-        </Card>
+      <div className="container mx-auto px-4 py-8 space-y-8">
 
         {/* Stats */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <Card className="gradient-card border shadow-medium">
-            <CardHeader className="pb-2">
+        <div className="grid md:grid-cols-4 gap-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Active Requests
               </CardTitle>
+              <Clock className="h-5 w-5 text-orange-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-orange-600">0</div>
+              <div className="text-3xl font-bold">{activeRequests}</div>
             </CardContent>
           </Card>
 
-          <Card className="gradient-card border shadow-medium">
-            <CardHeader className="pb-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Completed Projects
               </CardTitle>
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-primary">0</div>
+              <div className="text-3xl font-bold">{completedProjects}</div>
             </CardContent>
           </Card>
 
-          <Card className="gradient-card border shadow-medium">
-            <CardHeader className="pb-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Employees Trained
               </CardTitle>
+              <Users className="h-5 w-5 text-orange-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-secondary">0</div>
+              <div className="text-3xl font-bold">0</div>
             </CardContent>
           </Card>
 
-          <Card className="gradient-card border shadow-medium">
-            <CardHeader className="pb-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Pending Reviews
               </CardTitle>
+              <FileText className="h-5 w-5 text-orange-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-accent">0</div>
+              <div className="text-3xl font-bold">{pendingReviews}</div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Request Type Buttons */}
+        <div className="grid md:grid-cols-2 gap-6">
           <Card 
-            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-            onClick={() => navigate('/company/new-request')}
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate('/corporate-training')}
           >
             <CardHeader>
-              <div className="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center mb-4">
-                <FileText className="h-6 w-6 text-orange-600" />
+              <div className="flex items-start gap-3">
+                <Plus className="h-5 w-5 text-muted-foreground mt-1" />
+                <div>
+                  <CardTitle className="text-xl">Corporate Training Request</CardTitle>
+                  <CardDescription>Submit a new training request for your employees</CardDescription>
+                </div>
               </div>
-              <CardTitle>Training Requests</CardTitle>
-              <CardDescription>Submit training needs</CardDescription>
             </CardHeader>
           </Card>
 
           <Card 
-            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-            onClick={() => navigate('/company/new-request')}
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate('/ai-analytics')}
           >
             <CardHeader>
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <Database className="h-6 w-6 text-primary" />
+              <div className="flex items-start gap-3">
+                <Plus className="h-5 w-5 text-muted-foreground mt-1" />
+                <div>
+                  <CardTitle className="text-xl">AI Solution Request</CardTitle>
+                  <CardDescription>Request AI data analytics or custom solutions</CardDescription>
+                </div>
               </div>
-              <CardTitle>AI Projects</CardTitle>
-              <CardDescription>Data analytics requests</CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card 
-            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-            onClick={() => navigate('/company/overview')}
-          >
-            <CardHeader>
-              <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center mb-4">
-                <Calendar className="h-6 w-6 text-secondary" />
-              </div>
-              <CardTitle>Meetings</CardTitle>
-              <CardDescription>Schedule consultations</CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card 
-            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-            onClick={() => navigate('/company/requests')}
-          >
-            <CardHeader>
-              <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
-                <TrendingUp className="h-6 w-6 text-accent" />
-              </div>
-              <CardTitle>Reports</CardTitle>
-              <CardDescription>Download deliverables</CardDescription>
             </CardHeader>
           </Card>
         </div>
+
+        {/* Recent Requests Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Requests</CardTitle>
+            <CardDescription>Your last 5 submissions</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {requests.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">No requests yet. Submit your first request above.</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Submitted</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {requests.slice(0, 5).map((request) => (
+                    <TableRow key={request.id}>
+                      <TableCell className="font-medium">
+                        {request.project_type === 'corporate_training' ? 'Corporate_training' : 'Ai_data_analytics'}
+                      </TableCell>
+                      <TableCell>{request.title}</TableCell>
+                      <TableCell>{getStatusBadge(request.status)}</TableCell>
+                      <TableCell>{format(new Date(request.created_at), 'MM/dd/yyyy')}</TableCell>
+                      <TableCell>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => navigate('/company/requests')}
+                        >
+                          View
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
