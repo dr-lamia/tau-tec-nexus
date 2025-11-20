@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Clock, CheckCircle2, Users, FileText, Plus, Database } from "lucide-react";
+import { Clock, CheckCircle2, Users, FileText, Plus, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -24,6 +24,23 @@ const CompanyDashboard = () => {
         .select('*')
         .eq('company_id', user.id)
         .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  // Fetch meetings for this company
+  const { data: meetings = [] } = useQuery({
+    queryKey: ['company-meetings', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const { data, error } = await supabase
+        .from('meetings')
+        .select('*')
+        .order('scheduled_at', { ascending: true });
       
       if (error) throw error;
       return data;
@@ -125,7 +142,7 @@ const CompanyDashboard = () => {
         </div>
 
         {/* Request Type Buttons */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-3 gap-6">
           <Card 
             className="cursor-pointer hover:shadow-lg transition-shadow"
             onClick={() => navigate('/corporate-training')}
@@ -151,6 +168,24 @@ const CompanyDashboard = () => {
                 <div>
                   <CardTitle className="text-xl">AI Solution Request</CardTitle>
                   <CardDescription>Request AI data analytics or custom solutions</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+          >
+            <CardHeader>
+              <div className="flex items-start gap-3">
+                <Calendar className="h-5 w-5 text-muted-foreground mt-1" />
+                <div>
+                  <CardTitle className="text-xl">Scheduled Meetings</CardTitle>
+                  <CardDescription>
+                    {meetings.length > 0 
+                      ? `${meetings.length} upcoming meeting${meetings.length > 1 ? 's' : ''}`
+                      : 'No scheduled meetings yet'}
+                  </CardDescription>
                 </div>
               </div>
             </CardHeader>
