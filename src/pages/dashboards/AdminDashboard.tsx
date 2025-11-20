@@ -50,8 +50,11 @@ const AdminDashboard = () => {
         </Card>
 
         {/* Stats */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <Card className="gradient-card border shadow-medium">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card 
+            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 cursor-pointer"
+            onClick={() => navigate('/admin/analytics')}
+          >
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Total Users
@@ -59,10 +62,14 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-slate-700">{stats?.totalUsers || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">All registered users</p>
             </CardContent>
           </Card>
 
-          <Card className="gradient-card border shadow-medium">
+          <Card 
+            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 cursor-pointer"
+            onClick={() => navigate('/admin/content')}
+          >
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Total Courses
@@ -70,28 +77,82 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-primary">{stats?.totalCourses || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">{stats?.publishedCourses || 0} published</p>
             </CardContent>
           </Card>
 
-          <Card className="gradient-card border shadow-medium">
+          <Card 
+            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 cursor-pointer"
+            onClick={() => navigate('/admin/requests')}
+          >
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Active Requests
+                Pending Requests
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-orange-600">{stats?.activeRequests || 0}</div>
+              <div className="text-3xl font-bold text-orange-600">{stats?.pendingRequests || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">Awaiting review</p>
             </CardContent>
           </Card>
 
-          <Card className="gradient-card border shadow-medium">
+          <Card 
+            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 cursor-pointer"
+            onClick={() => navigate('/admin/finance')}
+          >
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Revenue (MTD)
+                Total Revenue
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-secondary">${stats?.totalRevenue.toFixed(2) || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">Paid transactions</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Additional Stats Row */}
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <Card className="gradient-card border shadow-medium">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Enrollments
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.totalEnrollments || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">Active student enrollments</p>
+            </CardContent>
+          </Card>
+
+          <Card 
+            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 cursor-pointer"
+            onClick={() => navigate('/admin/analytics')}
+          >
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Instructor Applications
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600">{stats?.pendingInstructorApps || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">Pending approval</p>
+            </CardContent>
+          </Card>
+
+          <Card 
+            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 cursor-pointer"
+            onClick={() => navigate('/admin/meetings')}
+          >
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Scheduled Meetings
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">View All</div>
+              <p className="text-xs text-muted-foreground mt-1">Manage consultations</p>
             </CardContent>
           </Card>
         </div>
@@ -106,8 +167,8 @@ const AdminDashboard = () => {
               <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center mb-4">
                 <Users className="h-6 w-6 text-slate-700" />
               </div>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>Manage all users and roles</CardDescription>
+              <CardTitle>User Analytics</CardTitle>
+              <CardDescription>View user insights and trends</CardDescription>
             </CardHeader>
           </Card>
 
@@ -120,7 +181,7 @@ const AdminDashboard = () => {
                 <BookOpen className="h-6 w-6 text-primary" />
               </div>
               <CardTitle>Course Management</CardTitle>
-              <CardDescription>Oversee all courses</CardDescription>
+              <CardDescription>Manage and publish courses</CardDescription>
             </CardHeader>
           </Card>
 
@@ -133,20 +194,20 @@ const AdminDashboard = () => {
                 <Building2 className="h-6 w-6 text-orange-600" />
               </div>
               <CardTitle>Corporate Requests</CardTitle>
-              <CardDescription>Review and approve</CardDescription>
+              <CardDescription>Review and approve requests</CardDescription>
             </CardHeader>
           </Card>
 
           <Card 
             className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-            onClick={() => navigate('/admin/settings')}
+            onClick={() => navigate('/admin/finance')}
           >
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center mb-4">
                 <Settings className="h-6 w-6 text-secondary" />
               </div>
-              <CardTitle>System Settings</CardTitle>
-              <CardDescription>Configure platform</CardDescription>
+              <CardTitle>Financial Overview</CardTitle>
+              <CardDescription>View payments and payouts</CardDescription>
             </CardHeader>
           </Card>
 
@@ -158,8 +219,21 @@ const AdminDashboard = () => {
               <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
                 <Shield className="h-6 w-6 text-accent" />
               </div>
-              <CardTitle>Security Logs</CardTitle>
-              <CardDescription>View audit trail</CardDescription>
+              <CardTitle>Audit Logs</CardTitle>
+              <CardDescription>Monitor system activity</CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card 
+            className="gradient-card border shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+            onClick={() => navigate('/admin/settings')}
+          >
+            <CardHeader>
+              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                <Settings className="h-6 w-6 text-primary" />
+              </div>
+              <CardTitle>Platform Settings</CardTitle>
+              <CardDescription>Configure system settings</CardDescription>
             </CardHeader>
           </Card>
         </div>
