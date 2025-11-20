@@ -175,6 +175,7 @@ const CompanyDashboard = () => {
 
           <Card 
             className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate('/company/meetings')}
           >
             <CardHeader>
               <div className="flex items-start gap-3">

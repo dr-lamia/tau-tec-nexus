@@ -523,6 +523,7 @@ export type Database = {
           duration_minutes: number | null
           host_id: string | null
           id: string
+          meeting_mode: string | null
           meeting_type: Database["public"]["Enums"]["meeting_type"]
           scheduled_at: string
           title: string
@@ -539,6 +540,7 @@ export type Database = {
           duration_minutes?: number | null
           host_id?: string | null
           id?: string
+          meeting_mode?: string | null
           meeting_type: Database["public"]["Enums"]["meeting_type"]
           scheduled_at: string
           title: string
@@ -555,6 +557,7 @@ export type Database = {
           duration_minutes?: number | null
           host_id?: string | null
           id?: string
+          meeting_mode?: string | null
           meeting_type?: Database["public"]["Enums"]["meeting_type"]
           scheduled_at?: string
           title?: string
