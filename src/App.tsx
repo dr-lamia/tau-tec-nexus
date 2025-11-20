@@ -31,6 +31,7 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import CompanyOverview from "./pages/company/CompanyOverview";
 import CompanyNewRequest from "./pages/company/CompanyNewRequest";
 import CompanyRequestsStatus from "./pages/company/CompanyRequestsStatus";
+import CompanyMeetings from "./pages/company/CompanyMeetings";
 import SelectRole from "./pages/SelectRole";
 import NotFound from "./pages/NotFound";
 
@@ -205,6 +206,14 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={["company"]}>
                   <CompanyRequestsStatus />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/company/meetings" 
+              element={
+                <ProtectedRoute allowedRoles={["company"]}>
+                  <CompanyMeetings />
                 </ProtectedRoute>
               } 
             />

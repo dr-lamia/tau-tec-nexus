@@ -23,8 +23,10 @@ export default function AdminMeetings() {
     title: '',
     description: '',
     meeting_type: 'company_consultation' as const,
+    meeting_mode: 'online' as 'online' | 'offline',
     scheduled_at: '',
-    duration_minutes: 60
+    duration_minutes: 60,
+    zoom_join_url: '',
   });
 
   const { data: meetings, isLoading } = useQuery({
@@ -46,13 +48,16 @@ export default function AdminMeetings() {
     mutationFn: async (meetingData: typeof formData) => {
       const { data: { user } } = await supabase.auth.getUser();
       
-      // For MVP, we'll create meetings without Zoom integration
-      // In production, this would call the Zoom edge function
+      // Create meeting with optional Zoom link
       const { error } = await supabase.from('meetings').insert({
-        ...meetingData,
+        title: meetingData.title,
+        description: meetingData.description,
+        meeting_type: meetingData.meeting_type,
+        meeting_mode: meetingData.meeting_mode,
+        scheduled_at: meetingData.scheduled_at,
+        duration_minutes: meetingData.duration_minutes,
         host_id: user?.id,
-        zoom_join_url: `https://zoom.us/j/placeholder-${Date.now()}`,
-        zoom_meeting_id: `placeholder-${Date.now()}`
+        zoom_join_url: meetingData.meeting_mode === 'online' ? meetingData.zoom_join_url : null,
       });
 
       if (error) throw error;
@@ -73,8 +78,10 @@ export default function AdminMeetings() {
         title: '',
         description: '',
         meeting_type: 'company_consultation',
+        meeting_mode: 'online',
         scheduled_at: '',
-        duration_minutes: 60
+        duration_minutes: 60,
+        zoom_join_url: '',
       });
     },
     onError: () => {
@@ -162,6 +169,33 @@ export default function AdminMeetings() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div>
+                  <Label htmlFor="mode">Meeting Mode</Label>
+                  <Select
+                    value={formData.meeting_mode}
+                    onValueChange={(value: 'online' | 'offline') => setFormData({ ...formData, meeting_mode: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="online">Online</SelectItem>
+                      <SelectItem value="offline">Offline</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {formData.meeting_mode === 'online' && (
+                  <div>
+                    <Label htmlFor="zoom_link">Meeting Link (Zoom, Teams, etc.)</Label>
+                    <Input
+                      id="zoom_link"
+                      type="url"
+                      value={formData.zoom_join_url}
+                      onChange={(e) => setFormData({ ...formData, zoom_join_url: e.target.value })}
+                      placeholder="https://zoom.us/j/..."
+                    />
+                  </div>
+                )}
                 <div>
                   <Label htmlFor="scheduled_at">Date & Time</Label>
                   <Input
