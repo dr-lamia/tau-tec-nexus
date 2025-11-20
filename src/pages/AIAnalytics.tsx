@@ -36,6 +36,26 @@ const AIAnalytics = () => {
 
     setIsSubmitting(true);
     try {
+      // Check if user has company role
+      const { data: roles } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'company');
+
+      // If user doesn't have company role, add it
+      if (!roles || roles.length === 0) {
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert({ user_id: user.id, role: 'company' });
+        
+        if (roleError) {
+          toast.error("Unable to set up company account. Please contact support.");
+          return;
+        }
+      }
+
+      // Now submit the request
       const { error } = await supabase.from("company_requests").insert({
         company_id: user.id,
         title: formData.title,
