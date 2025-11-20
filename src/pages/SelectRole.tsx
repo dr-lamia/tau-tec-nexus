@@ -35,7 +35,7 @@ const roleConfig: Record<UserRole, { icon: React.ElementType; title: string; des
 };
 
 const SelectRole = () => {
-  const { user, availableRoles, userRole, selectRole } = useAuth();
+  const { user, availableRoles, userRole, selectRole, signOut } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -67,6 +67,11 @@ const SelectRole = () => {
   const handleRoleSelection = (role: UserRole) => {
     selectRole(role);
     navigate("/dashboard");
+  };
+
+  const handleSignInWithDifferentAccount = async () => {
+    await signOut();
+    navigate("/auth");
   };
 
   return (
@@ -107,6 +112,16 @@ const SelectRole = () => {
               </Card>
             );
           })}
+        </div>
+
+        <div className="text-center mt-8">
+          <Button
+            variant="ghost"
+            onClick={handleSignInWithDifferentAccount}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            Sign in with a different account
+          </Button>
         </div>
       </div>
     </div>
