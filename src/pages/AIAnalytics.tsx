@@ -11,12 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
-import { BrainCircuit, BarChart3, TrendingUp, Zap, Target, Shield } from "lucide-react";
+import { BrainCircuit, BarChart3, TrendingUp, Zap, Target, Shield, Upload, X } from "lucide-react";
 
 const AIAnalytics = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -24,6 +25,17 @@ const AIAnalytics = () => {
     delivery_mode: "",
     budget: "",
   });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      setUploadedFiles(prev => [...prev, ...newFiles]);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,18 +67,49 @@ const AIAnalytics = () => {
         }
       }
 
-      // Now submit the request
-      const { error } = await supabase.from("company_requests").insert({
-        company_id: user.id,
-        title: formData.title,
-        description: formData.description,
-        project_type: "ai_data_analytics",
-        duration_weeks: formData.duration_weeks ? parseInt(formData.duration_weeks) : null,
-        delivery_mode: formData.delivery_mode as any,
-        budget: formData.budget ? parseFloat(formData.budget) : null,
-      });
+      // Submit the request
+      const { data: requestData, error } = await supabase
+        .from("company_requests")
+        .insert({
+          company_id: user.id,
+          title: formData.title,
+          description: formData.description,
+          project_type: "ai_data_analytics",
+          duration_weeks: formData.duration_weeks ? parseInt(formData.duration_weeks) : null,
+          delivery_mode: formData.delivery_mode as any,
+          budget: formData.budget ? parseFloat(formData.budget) : null,
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Upload files if any
+      if (uploadedFiles.length > 0 && requestData) {
+        for (const file of uploadedFiles) {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${user.id}/${requestData.id}/${Date.now()}.${fileExt}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('company-data-files')
+            .upload(fileName, file);
+
+          if (uploadError) {
+            console.error('File upload error:', uploadError);
+            continue;
+          }
+
+          // Save file metadata
+          await supabase.from('company_request_files').insert({
+            request_id: requestData.id,
+            file_name: file.name,
+            file_path: fileName,
+            file_size: file.size,
+            mime_type: file.type,
+            uploaded_by: user.id,
+          });
+        }
+      }
 
       toast.success("Request submitted successfully! We'll contact you soon.");
       navigate("/dashboard");
@@ -254,6 +297,44 @@ const AIAnalytics = () => {
                         onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
                       />
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="files">Upload Data Files (optional)</Label>
+                    <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
+                      <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-2" />
+                      <Label htmlFor="files" className="cursor-pointer">
+                        <span className="text-primary hover:underline">Click to upload</span>
+                        <span className="text-muted-foreground"> or drag and drop</span>
+                      </Label>
+                      <p className="text-xs text-muted-foreground mt-1">CSV, Excel, JSON, PDF files accepted</p>
+                      <Input
+                        id="files"
+                        type="file"
+                        multiple
+                        className="hidden"
+                        onChange={handleFileChange}
+                        accept=".csv,.xlsx,.xls,.json,.pdf,.txt"
+                      />
+                    </div>
+                    
+                    {uploadedFiles.length > 0 && (
+                      <div className="mt-4 space-y-2">
+                        {uploadedFiles.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
+                            <span className="text-sm truncate flex-1">{file.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeFile(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
